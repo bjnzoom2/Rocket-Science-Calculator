@@ -39,4 +39,8 @@ public:
 	const float getBurnTime() const {
 		return propellantMass / massFlowRate;
 	}
+
+	const float getMass() const {
+		return mass;
+	}
 };

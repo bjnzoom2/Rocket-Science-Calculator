@@ -23,5 +23,8 @@
     <ClInclude Include="rocket.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="rocketMath.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

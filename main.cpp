@@ -15,7 +15,7 @@ int main() {
 	std::cout << "Net Force: " << waterRocket.getNetForce() << " N\n";
 	std::cout << "Acceleration: " << waterRocket.getAccel() << " m/s2\n";
 	std::cout << "Burn Time: " << waterRocket.getBurnTime() << " s\n";
-	std::cout << "TWR: " << waterRocket.getThrust() * (waterRocket.getMass() * 9.81) << "\n";
+	std::cout << "TWR: " << waterRocket.getThrust() / (waterRocket.getMass() * 9.81) << "\n";
 
 	return 0;
 }

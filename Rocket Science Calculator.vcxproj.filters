@@ -20,7 +20,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="rocket.h">
+    <ClInclude Include="waterRocket.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="rocketMath.h">

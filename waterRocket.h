@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <iostream>
 #include "rocketMath.h"
 
 class WaterRocket {
@@ -103,7 +104,72 @@ public:
 	const float getAccel() const { return netForce / mass; }
 	const float getMass() const { return mass; }
 	const float getPropellantMass() const { return propellantMass; }
+	const float getExhaustPressure() const { return exhaustPressure; }
 	const float getVelocity() const { return velocity; }
 	const float getHeight() const { return height; }
 	const float getMaxAltitude() const { return maxAltitude; }
+	const float getDragCoeff() const { return dragCoeff; }
+
+	void setInitialState(float v, float h) {
+		velocity = v;
+		height = h;
+		maxAltitude = h;
+	}
+
+	void setDragCoeff(float dc) {
+		dragCoeff = dc;
+	}
+};
+
+class WaterRocketMulti {
+private:
+	std::vector<WaterRocket*> stages = {};
+	WaterRocket* active;
+	int stageIndex = 0;
+
+	float startCd = 0.0f;
+
+	float getCurrentCd() {
+		int remainingStages = stages.size() - stageIndex;
+		if (remainingStages <= 0) return 0.0f;
+
+		float cd = startCd;
+
+		cd += remainingStages * 0.05f;
+
+		if (remainingStages > 1) {
+			cd += (remainingStages - 1) * 0.08f;
+		}
+
+		return cd;
+	}
+public:
+	WaterRocketMulti(std::vector<WaterRocket*> _stages) : stages(_stages) {
+		if (!stages.empty()) {
+			startCd = stages[stages.size() - 1]->getDragCoeff();
+		}
+		else return;
+
+		stages[0]->setDragCoeff(getCurrentCd());
+	}
+
+	void update(float dt) {
+		if (stageIndex >= stages.size()) return;
+		active = stages[stageIndex];
+		active->update(dt);
+
+		if (active->getPropellantMass() <= 0 && stageIndex < stages.size() - 1) {
+			float velo = active->getVelocity();
+			float height = active->getHeight();
+
+			stageIndex++;
+
+			stages[stageIndex]->setInitialState(velo, height);
+			stages[stageIndex]->setDragCoeff(getCurrentCd());
+
+			std::cout << "Stage " << stageIndex + 1 << " Ignition\n";
+		}
+	}
+
+	const WaterRocket* getActive() const { return stages[stageIndex]; }
 };

@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="Rocket Science Calculator.vcxproj" />
+  <Project Path="Rocket Science Calculator.vcxproj" Id="e5855ee0-b127-4238-9d20-907658eca5f8" />
 </Solution>

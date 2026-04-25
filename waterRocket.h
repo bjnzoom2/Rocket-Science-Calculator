@@ -89,9 +89,8 @@ public:
 			calculateEngineState();
 		}
 
-		updateForces();
-
 		drag = 0.5f * 1.225f * (velocity * velocity) * dragCoeff * referenceArea;
+		updateForces();
 
 		velocity += netForce / mass * dt;
 		height += velocity * dt;

@@ -130,6 +130,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="solidRocket.h" />
     <ClInclude Include="waterRocket.h" />
     <ClInclude Include="rocketMath.h" />
   </ItemGroup>

@@ -33,7 +33,7 @@ private:
 	// Other Forces
 	float drag = 0.0f;
 	float dragCoeff = 0.0f;
-	float referenceArea = 0.0f;
+	float referenceArea = 0.0f; // m2
 
 	void calculateEngineState() {
 		if (exhaustPressure > ambientPressure && propellantMass > 0.0f) {
@@ -50,7 +50,7 @@ private:
 
 	void updateForces() {
 		mass = dryMass + propellantMass;
-		float gForce = mass * 9.81f;
+		float gForce = mass * 9.80665f;
 
 		if (velocity > 0) {
 			netForce = thrust - gForce - drag;

@@ -35,9 +35,9 @@ int main() {
 	float outerRadius = 0.018f; // m
 	float grainLength = 0.15f; // m
 	float burnRateCoeff = 0.0000082f;
-	float throatArea = 0.00005f; // m2
+	float throatArea = 0.000025f; // m2
 	float pressureExponent = 0.32f;
-	float exitArea = 0.000314f; // m2
+	float exitArea = 0.000120f; // m2
 	float referenceArea = 0.00125f; // m2
 	float heatRatio = 1.13f;
 	float chamberTemp = 1720.0f; // K

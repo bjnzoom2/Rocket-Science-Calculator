@@ -5,7 +5,15 @@
 #include "solidRocket.h"
 #include "rocketMath.h"
 
+#ifdef _WIN32
+	#include <windows.h>
+#endif
+
 int main() {
+	#ifdef _WIN32
+		SetConsoleOutputCP(CP_UTF8);
+	#endif
+
 	float seaLevelPa = 101325.0f;
 	/*float exitArea = 0.00006362f;
 

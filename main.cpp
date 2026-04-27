@@ -1,9 +1,9 @@
 #include <iostream>
 #include <iomanip>
-#include <vector>
 
 #include "waterRocket.h"
 #include "solidRocket.h"
+#include "rocketMath.h"
 
 int main() {
 	float seaLevelPa = 101325.0f;
@@ -34,27 +34,41 @@ int main() {
 	float coreRadius = 0.006f; // m
 	float outerRadius = 0.018f; // m
 	float grainLength = 0.15f; // m
-	float burnRateCoeff = 0.0000082f;
-	float throatArea = 0.000025f; // m2
+	float burnRateCoeff = 0.0000926f;
+	float throatArea = 0.00003f; // m2
 	float pressureExponent = 0.32f;
-	float exitArea = 0.000120f; // m2
+	float exitArea = 0.0001f; // m2
 	float referenceArea = 0.00125f; // m2
 	float heatRatio = 1.13f;
 	float chamberTemp = 1720.0f; // K
 	float gasConstant = 198.0f; // J/(mol * K)
 	float noseconeLength = 0.05f; // m
 	float bodyLength = 0.15f; // m
+	int numFins = 4;
+	float finRootChord = 0.05f; // m
+	float finTipChord = 0.00f; // m
+	float finSpan = 0.05f; // m
+	float finThickness = 0.002f; // m
 
 	float propellantVolume = 3.14159f * grainLength * ((outerRadius * outerRadius) - (coreRadius * coreRadius));
 	float propellantMass = propellantDensity * propellantVolume;
 
-	SolidRocket solidRocket(dryMass, propellantMass, propellantDensity, coreRadius, outerRadius, grainLength, burnRateCoeff, throatArea, pressureExponent, seaLevelPa, seaLevelPa, exitArea, referenceArea, heatRatio, chamberTemp, gasConstant, noseconeLength, bodyLength);
+	SolidRocket solidRocket(dryMass, propellantMass, propellantDensity, coreRadius, outerRadius, grainLength, burnRateCoeff, throatArea, pressureExponent, seaLevelPa, seaLevelPa, exitArea, referenceArea, heatRatio, chamberTemp, gasConstant, noseconeLength, bodyLength, 
+		numFins, finRootChord, finTipChord, finSpan, finThickness);
 
 	float dt = 0.001f;
 	float time = 0.0f;
 
 	float engineCutTime = 0.0f;
 	bool engineCutoff = false;
+
+	std::cout << "Ideal Delta-V " << RocketMath::getIdealDeltaV(solidRocket.getExhaustVelo(), dryMass + propellantMass, dryMass) << "m/s\n";
+
+	std::cout << "Start Program (y/n): ";
+	std::string proceed = "";
+	std::cin >> proceed;
+
+	if (proceed != "y") return -1;
 
 	std::cout << "Time(s) | Thrust(N) | Accel(m/s2) | Velo(m/s) | Fuel(kg) | Height(m)\n";
 	std::cout << "--------------------------------------------------------------------\n";

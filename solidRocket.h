@@ -51,6 +51,11 @@ private:
 
 	float noseconeLength = 0.0f; // m
 	float bodyLength = 0.0f; // m
+	int numFins = 0;
+	float finRootChord = 0.0f; // m
+	float finTipChord = 0.0f; // m
+	float finSpan = 0.0f; // m
+	float finThickness = 0.0f; // m
 
 	float finenessRatio = 0.0f;
 
@@ -89,24 +94,24 @@ private:
 
 public:
 	SolidRocket(float dryM, float propellantM, float propellantD = 0.0f, float initCR = 0.0f, float outerR = 0.0f, float grainL = 0.0f, float burnRC = 0.0f, float throatA = 0.0f, float pressureEx = 0.0f, float exhaustP = 1.0f, float ambientP = 1.0f, float exitA = 0.0f, float referenceA = 0.0f, float heatRa = 0.0f,
-		float chamberT = 0.0f, float gasC = 0.0f, float noseconeL = 0.0f, float bodyL = 0.0f) :
+		float chamberT = 0.0f, float gasC = 0.0f, float noseconeL = 0.0f, float bodyL = 0.0f, int numF = 0.0f, float finRC = 0.0f, float finTC = 0.0f, float finS = 0.0f, float finT = 0.0f) :
 		dryMass(dryM), propellantMass(propellantM), propellantDensity(propellantD), initCoreRadius(initCR), currentCoreRadius(initCR), outerRadius(outerR), grainLength(grainL), burnRateCoeff(burnRC), throatArea(throatA), pressureExponent(pressureEx),
-		exhaustPressure(exhaustP), ambientPressure(ambientP), exitArea(exitA), referenceArea(referenceA), heatRatio(heatRa), chamberTemp(chamberT), gasConstant(gasC), noseconeLength(noseconeL), bodyLength(bodyL) {
+		exhaustPressure(exhaustP), ambientPressure(ambientP), exitArea(exitA), referenceArea(referenceA), heatRatio(heatRa), chamberTemp(chamberT), gasConstant(gasC), noseconeLength(noseconeL), bodyLength(bodyL), numFins(numF), finRootChord(finRC), finTipChord(finTC), finSpan(finS), finThickness(finT) {
 
-		dragCoeff = RocketMath::getDragCD(noseconeLength, bodyLength, referenceArea, finenessRatio);
+		finenessRatio = (noseconeLength + bodyLength) / (2.0f * outerRadius);
+		dragCoeff = RocketMath::getDragCD(noseconeLength, bodyLength, referenceArea, finenessRatio,
+			numFins, finRootChord, finTipChord, finSpan, finThickness);
 
 		calculateEngineState();
 	}
 
 	void update(float dt) {
 		ambientPressure = 101325.0f * std::exp(-height / 8500.0f);
-		float airTempK = (32.0f - 0.0065f * height) + 273.15;
+		float airTempK = (32.0f - 0.0065f * height) + 273.15f;
 		airDensity = ambientPressure / (287.058f * airTempK);
 
 		float soundSpeed = std::sqrt(1.4f * 287.058f * airTempK);
 		float mach = std::abs(velocity) / soundSpeed;
-
-		dynamicDragCoeff = RocketMath::getWaveDragCD(mach, dragCoeff, finenessRatio);
 
 		if (propellantMass <= 0.0f) {
 			thrust = 0.0f;
@@ -124,6 +129,8 @@ public:
 			calculateEngineState();
 		}
 
+		dynamicDragCoeff = RocketMath::getWaveDragCD(mach, dragCoeff, finenessRatio);
+
 		drag = 0.5f * airDensity * (velocity * velocity) * dynamicDragCoeff * referenceArea;
 		updateForces();
 
@@ -139,6 +146,7 @@ public:
 	const float getMass() const { return mass; }
 	const float getPropellantMass() const { return propellantMass; }
 	const float getExhaustPressure() const { return exhaustPressure; }
+	const float getExhaustVelo() const { return exhaustVelocity; }
 	const float getVelocity() const { return velocity; }
 	const float getHeight() const { return height; }
 	const float getMaxAltitude() const { return maxAltitude; }

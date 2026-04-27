@@ -73,22 +73,31 @@ namespace RocketMath {
 		return 2.0f * std::sqrt(referenceArea / 3.14159f);
 	}
 
-	float getDragCD(float noseLength, float bodyLength, float referenceArea, float& finenessRatio) {
+	float getDragCD(float noseLength, float bodyLength, float referenceArea, float finenessRatio, int numFins, float finRootChord, float finTipChord, float finSpan, float finThickness) {
 		float totalLength = noseLength + bodyLength;
 		float diameter = getDiameter(referenceArea);
 
-		float noseSurface = 3.14159f * (diameter / 2.0f) * std::sqrt(std::pow(diameter / 2.0f, 2) + std::pow(noseLength, 2));
+		float noseSurface = 3.14159f * (diameter / 2.0f) * std::sqrt(std::pow(diameter / 2.0f, 2.0f) + std::pow(noseLength, 2.0f));
 		float bodySurface = 3.14159f * diameter * bodyLength;
 		float wettedArea = noseSurface + bodySurface;
 
 		float Cf = 0.003f;
 
-		finenessRatio = totalLength / diameter;
 		float formFactor = 1.0f + (1.5f / std::pow(finenessRatio, 1.5f)) + (0.5f / finenessRatio);
-
 		float skinDrag = Cf * (wettedArea / referenceArea) * formFactor;
 
-		return skinDrag + 0.1f;
+		float singleFinArea = 0.5f * (finRootChord + finTipChord) * finSpan;
+
+		float finWettedArea = 2.0f * singleFinArea * numFins;
+		float meanChord = (finRootChord + finTipChord) / 2.0f;
+
+		float finFormFactor = 1.0f + (60.0f * std::pow(finThickness / meanChord, 4.0f)) + (0.8f * (finThickness / meanChord));
+
+		float interferenceFactor = 1.0f + (diameter / (2.0f * finSpan));
+
+		float finDrag = Cf * (finWettedArea / referenceArea) * finFormFactor * interferenceFactor;
+
+		return 0.1f + skinDrag + finDrag;
 	}
 
 	float getWaveDragCD(float mach, float baseCD, float finenessRatio) {
@@ -108,5 +117,9 @@ namespace RocketMath {
 		float supersonicCD = (peakMagnitude * 1.2f) / beta;
 
 		return std::max(baseCD, supersonicCD);
+	}
+
+	float getIdealDeltaV(float initExhaustVelo, float initMass, float dryMass) {
+		return initExhaustVelo * std::log(initMass / dryMass);
 	}
 }

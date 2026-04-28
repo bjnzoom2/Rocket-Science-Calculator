@@ -116,7 +116,7 @@ namespace RocketMath {
 		float beta = std::sqrt(mach * mach - 1.0f);
 		float supersonicCD = (peakMagnitude * 1.2f) / beta;
 
-		return std::max(baseCD, supersonicCD);
+		return std::max(baseCD * 1.15f, supersonicCD);
 	}
 
 	float getIdealDeltaV(float initExhaustVelo, float initMass, float dryMass) {

@@ -69,6 +69,14 @@ namespace RocketMath {
 		return 3.14159f * (R * R);
 	}
 
+	float getBATESBurnArea(float currentCR, float grainL, float numSeg, float outerR) {
+		float areaCore = 2.0f * 3.14159f * currentCR * grainL * numSeg;
+		float areaEnds = 2.0f * numSeg * 3.14159f * (pow(outerR, 2.0f) - pow(currentCR, 2.0f));
+		float totalArea = areaCore + areaEnds;
+
+		return totalArea;
+	}
+
 	float getDiameter(float referenceArea) {
 		return 2.0f * std::sqrt(referenceArea / 3.14159f);
 	}
@@ -114,9 +122,9 @@ namespace RocketMath {
 		}
 
 		float beta = std::sqrt(mach * mach - 1.0f);
-		float supersonicCD = (peakMagnitude * 1.2f) / beta;
+		float supersonicCD = (peakMagnitude * 1.5f) / beta;
 
-		return std::max(baseCD * 1.15f, supersonicCD);
+		return std::max(baseCD * 1.1f, std::min(supersonicCD, peakMagnitude * 1.2f));
 	}
 
 	float getIdealDeltaV(float initExhaustVelo, float initMass, float dryMass) {

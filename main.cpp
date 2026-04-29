@@ -38,37 +38,39 @@ int main() {
 
     WaterRocketMulti waterRocket(stages);*/
 
-    float casingMass = 0.75f;
-    float airframeMass = 0.80f; // Tube + Fins + Nosecone
-    float electronicsMass = 0.08f; // Altimeter + Battery
-    float recoveryMass = 0.15f; // Parachute + Cord
+    float casingMass = 1.8f;
+    float airframeMass = 1.5f; // Tube + Fins + Nosecone
+    float electronicsMass = 0.15f; // Altimeter + Battery
+    float recoveryMass = 0.5f; // Parachute + Cord
     float dryMass = casingMass + airframeMass + electronicsMass + recoveryMass;
 
-    float propellantDensity = 1889.0f; // kg/m3
-    float coreRadius = 0.002f; // m
-    float outerRadius = 0.025f; // m
-    float grainLength = 0.6f; // m
-    float burnRateCoeff = 0.0000926f;
-    float throatArea = 0.00009f; // m2
-    float pressureExponent = 0.32f;
-    float exitArea = 0.0006f; // m2
-    float referenceArea = 0.002827f; // m2
-    float heatRatio = 1.13f;
-    float chamberTemp = 1720.0f; // K
-    float gasConstant = 198.0f; // J/(mol * K)
-    float noseconeLength = 0.05f; // m
-    float bodyLength = 0.8f; // m
+    float propellantDensity = 1750.0f; // kg/m3
+    float coreRadius = 0.006f; // m
+    float outerRadius = 0.038f; // m
+    float grainLength = 0.16f; // m
+    float burnRateCoeff = 0.000022f; // Normal (0.000052)
+    float throatArea = 0.0004f; // m2
+    float pressureExponent = 0.41f;
+    float exitArea = 0.0075f; // m2
+    float referenceArea = 0.004536f; // m2
+    float heatRatio = 1.22f;
+    float chamberTemp = 2850.0f; // K
+    float gasConstant = 290.0f; // J/(kg * K)
+    float noseconeLength = 0.25f; // m
+    float bodyLength = 1.3f; // m
     int numFins = 4;
     float finRootChord = 0.05f; // m
     float finTipChord = 0.00f; // m
     float finSpan = 0.05f; // m
     float finThickness = 0.002f; // m
+    int numSegments = 4;
 
-    float propellantVolume = 3.14159f * grainLength * ((outerRadius * outerRadius) - (coreRadius * coreRadius));
+    float totalPropellantLength = numSegments * grainLength;
+    float propellantVolume = 3.14159f * totalPropellantLength * ((outerRadius * outerRadius) - (coreRadius * coreRadius));
     float propellantMass = propellantDensity * propellantVolume;
 
     SolidRocket solidRocket(dryMass, propellantMass, propellantDensity, coreRadius, outerRadius, grainLength, burnRateCoeff, throatArea, pressureExponent, seaLevelPa, seaLevelPa, exitArea, referenceArea, heatRatio, chamberTemp, gasConstant, noseconeLength, bodyLength,
-        numFins, finRootChord, finTipChord, finSpan, finThickness);
+        numFins, finRootChord, finTipChord, finSpan, finThickness, numSegments);
 
     float dt = 0.001f;
     float time = 0.0f;
@@ -78,6 +80,7 @@ int main() {
 
     std::cout << "Ideal Delta-V: " << RocketMath::getIdealDeltaV(solidRocket.getEffExhaustVelo(), dryMass + propellantMass, dryMass) << "m/s\n";
     std::cout << "TWR: " << solidRocket.getThrust() / ((dryMass + propellantMass) * 9.80665f) << "\n";
+    std::cout << "Exit Mach: " << RocketMath::getExitMachApproximation(exitArea / throatArea, heatRatio) << "\n";
 
     std::cout << '\n';
 
@@ -88,8 +91,8 @@ int main() {
     if (proceed != "y") return -1;
     std::cout << '\n';
 
-    std::cout << "Time(s) | Thrust(N) | Accel(m/s2) | Velo(m/s) | Fuel(kg) | Height(m) | Mach | Drag Coeff\n";
-    std::cout << "----------------------------------------------------------------------------------------\n";
+    std::cout << "Time(s) | Thrust(N) | Accel(m/s2) | Velo(m/s) | Fuel(kg) | Height(m) | Mach | Drag\n";
+    std::cout << "----------------------------------------------------------------------------------\n";
 
     while (solidRocket.getHeight() >= 0.0f) {
         solidRocket.update(dt);
@@ -109,7 +112,7 @@ int main() {
                 << std::setw(8) << solidRocket.getPropellantMass() << " | "
                 << std::setw(9) << solidRocket.getHeight() << " | "
                 << std::setw(4) << solidRocket.getMach() << " | "
-                << std::setw(6) << solidRocket.getDynamicDragCoeff() << "\n";
+                << std::setw(6) << solidRocket.getDrag() << "\n";
         }
     }
 

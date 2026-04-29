@@ -61,10 +61,12 @@ private:
     float finThickness = 0.0f; // m
 
     float finenessRatio = 0.0f;
+    
+    int numSegments = 0;
 
     void calculateEngineState() {
         if (propellantMass > 0.0f) {
-            burnArea = RocketMath::getProgressiveBurnArea(currentCoreRadius, outerRadius, grainLength);
+            burnArea = RocketMath::getBATESBurnArea(currentCoreRadius, grainLength, numSegments, outerRadius);
 
             float exitMach = RocketMath::getExitMachApproximation(exitArea / throatArea, heatRatio);
             float gasFlow = RocketMath::getGasFlowabitilty(chamberTemp, gasConstant, heatRatio);
@@ -100,9 +102,10 @@ private:
 
 public:
     SolidRocket(float dryM, float propellantM, float propellantD = 0.0f, float initCR = 0.0f, float outerR = 0.0f, float grainL = 0.0f, float burnRC = 0.0f, float throatA = 0.0f, float pressureEx = 0.0f, float exhaustP = 1.0f, float ambientP = 1.0f, float exitA = 0.0f, float referenceA = 0.0f, float heatRa = 0.0f,
-        float chamberT = 0.0f, float gasC = 0.0f, float noseconeL = 0.0f, float bodyL = 0.0f, int numF = 0.0f, float finRC = 0.0f, float finTC = 0.0f, float finS = 0.0f, float finT = 0.0f) :
+        float chamberT = 0.0f, float gasC = 0.0f, float noseconeL = 0.0f, float bodyL = 0.0f, int numF = 0.0f, float finRC = 0.0f, float finTC = 0.0f, float finS = 0.0f, float finT = 0.0f, int numSeg = 0) :
         dryMass(dryM), initPropellantMass(propellantM), propellantMass(propellantM), propellantDensity(propellantD), initCoreRadius(initCR), currentCoreRadius(initCR), outerRadius(outerR), grainLength(grainL), burnRateCoeff(burnRC), throatArea(throatA), pressureExponent(pressureEx),
-        exhaustPressure(exhaustP), ambientPressure(ambientP), exitArea(exitA), referenceArea(referenceA), heatRatio(heatRa), chamberTemp(chamberT), gasConstant(gasC), noseconeLength(noseconeL), bodyLength(bodyL), numFins(numF), finRootChord(finRC), finTipChord(finTC), finSpan(finS), finThickness(finT) {
+        exhaustPressure(exhaustP), ambientPressure(ambientP), exitArea(exitA), referenceArea(referenceA), heatRatio(heatRa), chamberTemp(chamberT), gasConstant(gasC), noseconeLength(noseconeL), bodyLength(bodyL), numFins(numF), finRootChord(finRC), finTipChord(finTC), finSpan(finS), 
+        finThickness(finT), numSegments(numSeg) {
 
         finenessRatio = (noseconeLength + bodyLength) / (2.0f * outerRadius);
         dragCoeff = RocketMath::getDragCD(noseconeLength, bodyLength, referenceArea, finenessRatio,
@@ -132,7 +135,9 @@ public:
             }
             else {
                 propellantMass -= massToBurn;
-                currentCoreRadius += burnRate * dt;
+                float regression = burnRate * dt;
+                currentCoreRadius += regression;
+                grainLength -= 2.0f * regression;
                 calculateEngineState();
             }
         }
@@ -166,6 +171,7 @@ public:
     const float getHeight() const { return height; }
     const float getMaxAltitude() const { return maxAltitude; }
     const float getHighestVelo() const { return highestVelo; }
+    const float getDrag() const { return drag; }
     const float getDragCoeff() const { return dragCoeff; }
     const float getDynamicDragCoeff() const { return dynamicDragCoeff; }
     const float getMach() const { return mach; }

@@ -38,36 +38,37 @@ int main() {
 
     WaterRocketMulti waterRocket(stages);*/
 
-    float casingMass = 1.8f;
-    float airframeMass = 1.5f; // Tube + Fins + Nosecone
-    float electronicsMass = 0.15f; // Altimeter + Battery
-    float recoveryMass = 0.5f; // Parachute + Cord
+    float casingMass = 7.0f;
+    float airframeMass = 6.4f; // Fins, Nosecone and body
+    float electronicsMass = 0.25f;
+    float recoveryMass = 1.25f; // Parachute and cord
     float dryMass = casingMass + airframeMass + electronicsMass + recoveryMass;
 
     float propellantDensity = 1750.0f; // kg/m3
-    float coreRadius = 0.006f; // m
-    float outerRadius = 0.038f; // m
+    float coreRadius = 0.003f; // m
+    float outerRadius = 0.076f; // m
     float grainLength = 0.16f; // m
-    float burnRateCoeff = 0.000022f; // Normal (0.000052)
-    float throatArea = 0.0004f; // m2
+    float burnRateCoeff = 0.000010f; // Normal (0.000052)
+    float throatArea = 0.00045f; // m2
     float pressureExponent = 0.41f;
-    float exitArea = 0.0075f; // m2
-    float referenceArea = 0.004536f; // m2
+    float exitArea = 0.095f; // m2
     float heatRatio = 1.22f;
     float chamberTemp = 2850.0f; // K
     float gasConstant = 290.0f; // J/(kg * K)
-    float noseconeLength = 0.25f; // m
-    float bodyLength = 1.3f; // m
+    float noseconeLength = 1.25f; // m
+    float bodyLength = 4.5f; // m
     int numFins = 4;
-    float finRootChord = 0.05f; // m
-    float finTipChord = 0.00f; // m
-    float finSpan = 0.05f; // m
-    float finThickness = 0.002f; // m
-    int numSegments = 4;
+    float finRootChord = 0.12f; // m
+    float finTipChord = 0.02f; // m
+    float finSpan = 0.08f; // m
+    float finThickness = 0.004f; // m
+    int numSegments = 8;
 
     float totalPropellantLength = numSegments * grainLength;
     float propellantVolume = 3.14159f * totalPropellantLength * ((outerRadius * outerRadius) - (coreRadius * coreRadius));
     float propellantMass = propellantDensity * propellantVolume;
+
+    float referenceArea = 3.14159f * (outerRadius * outerRadius);
 
     SolidRocket solidRocket(dryMass, propellantMass, propellantDensity, coreRadius, outerRadius, grainLength, burnRateCoeff, throatArea, pressureExponent, seaLevelPa, seaLevelPa, exitArea, referenceArea, heatRatio, chamberTemp, gasConstant, noseconeLength, bodyLength,
         numFins, finRootChord, finTipChord, finSpan, finThickness, numSegments);

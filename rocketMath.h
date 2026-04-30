@@ -69,7 +69,7 @@ namespace RocketMath {
 		return 3.14159f * (R * R);
 	}
 
-	float getBATESBurnArea(float currentCR, float grainL, float numSeg, float outerR) {
+	float getBATESBurnArea(float currentCR, float grainL, int numSeg, float outerR) {
 		float areaCore = 2.0f * 3.14159f * currentCR * grainL * numSeg;
 		float areaEnds = 2.0f * numSeg * 3.14159f * (pow(outerR, 2.0f) - pow(currentCR, 2.0f));
 		float totalArea = areaCore + areaEnds;

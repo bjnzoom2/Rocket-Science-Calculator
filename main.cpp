@@ -48,8 +48,8 @@ int main() {
     float coreRadius = 0.003f; // m
     float outerRadius = 0.076f; // m
     float grainLength = 0.16f; // m
-    float burnRateCoeff = 0.000010f; // Normal (0.000052)
-    float throatArea = 0.00045f; // m2
+    float burnRateCoeff = 0.000018f; // Normal (0.000052)
+    float throatArea = 0.00055f; // m2
     float pressureExponent = 0.41f;
     float exitArea = 0.095f; // m2
     float heatRatio = 1.22f;

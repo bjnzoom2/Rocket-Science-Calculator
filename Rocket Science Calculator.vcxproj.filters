@@ -32,5 +32,8 @@
     <ClInclude Include="solidRocket.h">
       <Filter>Source Files\RocketTypes</Filter>
     </ClInclude>
+    <ClInclude Include="liquidRocket.h">
+      <Filter>Source Files\RocketTypes</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

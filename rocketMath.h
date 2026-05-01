@@ -14,7 +14,7 @@ namespace RocketMath {
 		return a * std::pow(P, n);
 	}
 
-	float getExhaustVeloLiquid(float internalPa, float externalPa, float density) {
+	float getExhaustVeloWater(float internalPa, float externalPa, float density) {
 		float exhaustVeloSquared = 2.0f * (internalPa - externalPa) / density;
 		return std::sqrt(exhaustVeloSquared);
 	}
@@ -129,5 +129,12 @@ namespace RocketMath {
 
 	float getIdealDeltaV(float initExhaustVelo, float initMass, float dryMass) {
 		return initExhaustVelo * std::log(initMass / dryMass);
+	}
+
+	float getCharacteristicVelocity(float heatRatio, float gasConstant, float chamberTemp) {
+		float chamberSpeedOfSound = std::sqrt(heatRatio * gasConstant * chamberTemp);
+		float vf = heatRatio * std::sqrt(std::pow(2.0f / (heatRatio + 1), (heatRatio + 1) / (heatRatio - 1)));
+
+		return chamberSpeedOfSound / vf;
 	}
 }

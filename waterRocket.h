@@ -37,7 +37,7 @@ private:
 
 	void calculateEngineState() {
 		if (exhaustPressure > ambientPressure && propellantMass > 0.0f) {
-			exhaustVelocity = RocketMath::getExhaustVeloLiquid(exhaustPressure, ambientPressure, liquidDensity);
+			exhaustVelocity = RocketMath::getExhaustVeloWater(exhaustPressure, ambientPressure, liquidDensity);
 			massFlowRate = RocketMath::getMFR(liquidDensity, exitArea, exhaustVelocity);
 			thrust = massFlowRate * exhaustVelocity;
 		}

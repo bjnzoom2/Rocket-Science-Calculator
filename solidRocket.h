@@ -115,11 +115,23 @@ public:
     }
 
     void update(float dt) {
-        ambientPressure = 101325.0f * std::exp(-height / 8500.0f);
         float groundTempK = 32.0f + 273.15f;
-        float airTempK = groundTempK - (0.0065f * height);
+        float airTempK = 0.0f;
+        float pressureBase = 0.0f;
 
-        if (airTempK < 216.65f) airTempK = 216.65f; // Tropopause temperature
+        if (height <= 11000.0f) {
+            airTempK = groundTempK - (0.0065f * height);
+            ambientPressure = 101325.0f * std::pow((airTempK / groundTempK), 5.25588f);
+        }
+        else if (height <= 20000.0f) {
+            airTempK = 216.65f;
+            ambientPressure = 22632.10f * std::exp(-0.000157f * (height - 11000.0f));
+        }
+        else {
+            airTempK = 216.65f + (0.001f * (height - 20000.0f));
+            ambientPressure = 5474.89f * std::pow((airTempK / 216.65f), -34.1632f);
+        }
+
         airDensity = ambientPressure / (287.058f * airTempK);
 
         float soundSpeed = std::sqrt(1.4f * 287.058f * airTempK);

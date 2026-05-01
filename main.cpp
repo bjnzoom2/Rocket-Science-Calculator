@@ -38,20 +38,20 @@ int main() {
 
     WaterRocketMulti waterRocket(stages);*/
 
-    float casingMass = 7.0f;
-    float airframeMass = 6.4f; // Fins, Nosecone and body
+    float casingMass = 13.1f;
+    float airframeMass = 6.15f; // Fins, Nosecone and body
     float electronicsMass = 0.25f;
-    float recoveryMass = 1.25f; // Parachute and cord
+    float recoveryMass = 1.85f; // Parachute and cord
     float dryMass = casingMass + airframeMass + electronicsMass + recoveryMass;
 
     float propellantDensity = 1750.0f; // kg/m3
     float coreRadius = 0.003f; // m
     float outerRadius = 0.076f; // m
-    float grainLength = 0.16f; // m
-    float burnRateCoeff = 0.000018f; // Normal (0.000052)
-    float throatArea = 0.00055f; // m2
+    float grainLength = 0.32f; // m
+    float burnRateCoeff = 0.000008f; // Normal (0.000052)
+    float throatArea = 0.00024f; // m2
     float pressureExponent = 0.41f;
-    float exitArea = 0.095f; // m2
+    float exitArea = 0.115f; // m2
     float heatRatio = 1.22f;
     float chamberTemp = 2850.0f; // K
     float gasConstant = 290.0f; // J/(kg * K)
@@ -60,7 +60,7 @@ int main() {
     int numFins = 4;
     float finRootChord = 0.12f; // m
     float finTipChord = 0.02f; // m
-    float finSpan = 0.08f; // m
+    float finSpan = 0.04f; // m
     float finThickness = 0.004f; // m
     int numSegments = 8;
 

@@ -74,7 +74,7 @@ private:
 
             burnRate = RocketMath::getBurnRateSolid(burnRateCoeff, combustionPressure, pressureExponent);
             massFlowRate = RocketMath::getMFRSolid(propellantDensity, burnArea, burnRate);
-            exhaustPressure = RocketMath::getExhaustPressureSolid(combustionPressure, heatRatio, exitMach);
+            exhaustPressure = RocketMath::getExhaustPressure(combustionPressure, heatRatio, exitMach);
 
             exitTemp = RocketMath::getExitTempSolid(chamberTemp, heatRatio, exitMach);
             exhaustVelocity = RocketMath::getExhaustVeloSolid(heatRatio, exitMach, gasConstant, exitTemp);

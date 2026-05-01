@@ -10,6 +10,10 @@ namespace RocketMath {
 		return p * A * r;
 	}
 
+	float getMFRLiquid(float injectorDischargeCoeff, float injectorArea, float bulkDensity, float dischargePressure, float chamberPressure) {
+		return injectorDischargeCoeff * injectorArea * std::sqrt(2.0f * bulkDensity * (dischargePressure - chamberPressure));
+	}
+
 	float getBurnRateSolid(float a, float P, float n) {
 		return a * std::pow(P, n);
 	}
@@ -23,6 +27,13 @@ namespace RocketMath {
 		return MachE * std::sqrt(heatRatio * gasConstant * exitTemp);
 	}
 
+	float getExhaustVeloLiquid(float heatRatio, float gasConstant, float chamberTemp, float exhaustPressure, float chamberPressure) {
+		float x = (2.0f * heatRatio / (heatRatio - 1.0f)) * gasConstant * chamberTemp;
+		float y = 1.0f - std::pow(exhaustPressure / chamberPressure, (heatRatio - 1.0f) / heatRatio);
+
+		return std::sqrt(x * y);
+	}
+
 	float getExitTempSolid(float Tc, float heatRatio, float MachE) {
 		return Tc / (1.0f + (heatRatio - 1) / 2 * (MachE * MachE));
 	}
@@ -32,7 +43,7 @@ namespace RocketMath {
 		return (initVolume * initPressure) / currentVolume;
 	}
 
-	float getExhaustPressureSolid(float Pc, float heatRatio, float MachE) {
+	float getExhaustPressure(float Pc, float heatRatio, float MachE) {
 		return Pc * std::pow(1.0f + ((heatRatio - 1.0f) / 2.0f) * (MachE * MachE), -(heatRatio / (heatRatio - 1)));
 	}
 
@@ -136,5 +147,18 @@ namespace RocketMath {
 		float vf = heatRatio * std::sqrt(std::pow(2.0f / (heatRatio + 1), (heatRatio + 1) / (heatRatio - 1)));
 
 		return chamberSpeedOfSound / vf;
+	}
+
+	float getBulkPropellantDensity(float fuelDensity, float oxidizerDensity, float mixtureRatio) {
+		return (mixtureRatio + 1.0f) / ((1.0f / fuelDensity) + (mixtureRatio / oxidizerDensity));
+	}
+
+	float getPumpDischargePressure(float tankPressure, float pumpConstant, float bulkDensity, float shaftVelocity) {
+		return tankPressure + (pumpConstant * bulkDensity * (shaftVelocity * shaftVelocity));
+	}
+	
+	float getChamberPressure(float injectorDischargeCoeff, float injectorArea, float characteristicVelo, float throatArea, float bulkDensity, float dischargePressure) {
+		float flowResistanceConstant = 2.0f * bulkDensity * ((injectorDischargeCoeff * injectorArea * characteristicVelo / throatArea) * (injectorDischargeCoeff * injectorArea * characteristicVelo / throatArea));
+		return (-flowResistanceConstant + std::sqrt(flowResistanceConstant * flowResistanceConstant + 4.0f * flowResistanceConstant * dischargePressure)) / 2.0f;
 	}
 }

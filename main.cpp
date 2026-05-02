@@ -75,9 +75,9 @@ int main() {
     SolidRocket solidRocket(dryMass, propellantMass, propellantDensity, coreRadius, outerRadius, grainLength, burnRateCoeff, throatArea, pressureExponent, seaLevelPa, seaLevelPa, exitArea, referenceArea, heatRatio, chamberTemp, gasConstant, noseconeLength, bodyLength,
         numFins, finRootChord, finTipChord, finSpan, finThickness, numSegments); */
 
-    float engineMass = 45.0f;
-    float tankageMass = 85.0f;
-    float airframeMass = 40.0f;
+    float engineMass = 90.0f;
+    float tankageMass = 120.0f;
+    float airframeMass = 80.0f;
     float avionicsRecoveryMass = 30.0f;
     float dryMass = engineMass + tankageMass + airframeMass + avionicsRecoveryMass;
 

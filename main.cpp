@@ -3,6 +3,8 @@
 
 #include "waterRocket.h"
 #include "solidRocket.h"
+#include "liquidRocket.h"
+
 #include "rocketMath.h"
 
 #ifdef _WIN32
@@ -38,7 +40,7 @@ int main() {
 
     WaterRocketMulti waterRocket(stages);*/
 
-    float casingMass = 13.1f;
+/*    float casingMass = 13.1f;
     float airframeMass = 6.15f; // Fins, Nosecone and body
     float electronicsMass = 0.25f;
     float recoveryMass = 1.85f; // Parachute and cord
@@ -71,7 +73,47 @@ int main() {
     float referenceArea = 3.14159f * (outerRadius * outerRadius);
 
     SolidRocket solidRocket(dryMass, propellantMass, propellantDensity, coreRadius, outerRadius, grainLength, burnRateCoeff, throatArea, pressureExponent, seaLevelPa, seaLevelPa, exitArea, referenceArea, heatRatio, chamberTemp, gasConstant, noseconeLength, bodyLength,
-        numFins, finRootChord, finTipChord, finSpan, finThickness, numSegments);
+        numFins, finRootChord, finTipChord, finSpan, finThickness, numSegments); */
+
+    float engineMass = 45.0f;
+    float tankageMass = 85.0f;
+    float airframeMass = 40.0f;
+    float avionicsRecoveryMass = 30.0f;
+    float dryMass = engineMass + tankageMass + airframeMass + avionicsRecoveryMass;
+
+    float fuelDensity = 810.0f;      // RP-1 (kg/m3)
+    float oxidizerDensity = 1141.0f; // LOX (kg/m3)
+    float mixtureRatio = 2.56f;      // O/F Ratio for RP-1/LOX
+    float propellantMass = 500.0f;  // kg
+
+    float throatArea = 0.005f;     // m2
+    float exitArea = 0.033f;       // m2
+    float injectorArea = 0.0025f;    // m2
+    float heatRatio = 1.24f;         
+    float gasConstant = 360.0f;      // J/(kg * K)
+    float chamberTemp = 3500.0f;     // K
+
+    float tankPressure = 350000.0f;  // 3.5 Bar (Pa)
+    float pumpConstant = 0.000045f;
+    float shaftInertia = 0.045f;     // kg*m2
+    float pumpEfficiency = 0.70f;
+    float turbineEfficiency = 0.75f;
+    float turbineInletTemp = 850.0f; // K
+    float turbineBleedRatio = 0.022f;
+    float injectorDischargeCoeff = 0.85f;
+    float flowResistanceCoeff = 0.05f;
+
+    float noseconeLength = 1.5f;     // m
+    float bodyLength = 6.5f;         // m
+    float referenceArea = 0.0314f;   // m2
+    int numFins = 4;
+    float finRootChord = 0.25f;      // m
+    float finTipChord = 0.10f;       // m
+    float finSpan = 0.15f;           // m
+    float finThickness = 0.006f;     // m
+
+    LiquidRocket keroloxRocket(throatArea, exitArea, injectorArea, heatRatio, gasConstant, chamberTemp, fuelDensity, oxidizerDensity, mixtureRatio, shaftInertia, pumpEfficiency, turbineEfficiency, tankPressure, propellantMass, dryMass, injectorDischargeCoeff,
+        pumpConstant, turbineBleedRatio, turbineInletTemp, flowResistanceCoeff, referenceArea, noseconeLength, bodyLength, numFins, finRootChord, finTipChord, finSpan, finThickness);
 
     float dt = 0.001f;
     float time = 0.0f;
@@ -79,8 +121,8 @@ int main() {
     float engineCutTime = 0.0f;
     bool engineCutoff = false;
 
-    std::cout << "Ideal Delta-V: " << RocketMath::getIdealDeltaV(solidRocket.getEffExhaustVelo(), dryMass + propellantMass, dryMass) << "m/s\n";
-    std::cout << "TWR: " << solidRocket.getThrust() / ((dryMass + propellantMass) * 9.80665f) << "\n";
+    std::cout << "Ideal Delta-V: " << RocketMath::getIdealDeltaV(keroloxRocket.getCharVelo() * 1.6f, dryMass + propellantMass, dryMass) << "m/s\n";
+    std::cout << "TWR: " << keroloxRocket.getThrust() / ((dryMass + propellantMass) * 9.80665f) << "\n";
     std::cout << "Exit Mach: " << RocketMath::getExitMachApproximation(exitArea / throatArea, heatRatio) << "\n";
 
     std::cout << '\n';
@@ -95,11 +137,11 @@ int main() {
     std::cout << "Time(s) | Thrust(N) | Accel(m/s2) | Velo(m/s) | Fuel(kg) | Height(m) | Mach | Drag\n";
     std::cout << "----------------------------------------------------------------------------------\n";
 
-    while (solidRocket.getHeight() >= 0.0f) {
-        solidRocket.update(dt);
+    while (keroloxRocket.getHeight() > 0.0f || time < 0.1f) {
+        keroloxRocket.update(dt);
         time += dt;
 
-        if (solidRocket.getPropellantMass() <= 0.0f && !engineCutoff) {
+        if (keroloxRocket.getPropellantMass() <= 0.0f && !engineCutoff) {
             engineCutTime = time;
             engineCutoff = true;
         }
@@ -107,19 +149,19 @@ int main() {
         if (std::fmod(time, 0.05f) < dt) {
             std::cout << std::fixed << std::setprecision(3)
                 << std::setw(7) << time << " | "
-                << std::setw(9) << solidRocket.getThrust() << " | "
-                << std::setw(11) << solidRocket.getAccel() << " | "
-                << std::setw(9) << solidRocket.getVelocity() << " | "
-                << std::setw(8) << solidRocket.getPropellantMass() << " | "
-                << std::setw(9) << solidRocket.getHeight() << " | "
-                << std::setw(4) << solidRocket.getMach() << " | "
-                << std::setw(6) << solidRocket.getDrag() << "\n";
+                << std::setw(9) << keroloxRocket.getThrust() << " | "
+                << std::setw(11) << keroloxRocket.getAccel() << " | "
+                << std::setw(9) << keroloxRocket.getVelocity() << " | "
+                << std::setw(8) << keroloxRocket.getPropellantMass() << " | "
+                << std::setw(9) << keroloxRocket.getHeight() << " | "
+                << std::setw(4) << keroloxRocket.getMach() << " | "
+                << std::setw(6) << keroloxRocket.getDrag() << "\n";
         }
     }
 
     std::cout << "\nTotal Burn Time: " << engineCutTime << " s\n";
-    std::cout << "\nMax Altitude: " << solidRocket.getMaxAltitude() << " m\n";
-    std::cout << "\nHighest Velocity: " << solidRocket.getHighestVelo() << " m/s\n";
+    std::cout << "\nMax Altitude: " << keroloxRocket.getMaxAltitude() << " m\n";
+    std::cout << "\nHighest Velocity: " << keroloxRocket.getHighestVelo() << " m/s\n";
 
     return 0;
 }

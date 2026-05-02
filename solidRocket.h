@@ -117,7 +117,6 @@ public:
     void update(float dt) {
         float groundTempK = 32.0f + 273.15f;
         float airTempK = 0.0f;
-        float pressureBase = 0.0f;
 
         if (height <= 11000.0f) {
             airTempK = groundTempK - (0.0065f * height);

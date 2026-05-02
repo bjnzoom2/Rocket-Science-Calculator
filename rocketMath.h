@@ -161,4 +161,67 @@ namespace RocketMath {
 		float flowResistanceConstant = 2.0f * bulkDensity * ((injectorDischargeCoeff * injectorArea * characteristicVelo / throatArea) * (injectorDischargeCoeff * injectorArea * characteristicVelo / throatArea));
 		return (-flowResistanceConstant + std::sqrt(flowResistanceConstant * flowResistanceConstant + 4.0f * flowResistanceConstant * dischargePressure)) / 2.0f;
 	}
+
+	float getPumpPowerReq(float mfr, float dischargePressure, float tankPressure, float bulkDensity, float pumpEfficiency) {
+		return (mfr * (dischargePressure - tankPressure)) / (bulkDensity * pumpEfficiency);
+	}
+
+	float getSHCP(float heatRatio, float gasConstant) {
+		return heatRatio * gasConstant / (heatRatio - 1);
+	}
+
+	float getFrictionLoss(float flowResistanceCoeff, float bulkDensity, float massFlowRateTurbine) {
+		return (flowResistanceCoeff * (massFlowRateTurbine * massFlowRateTurbine)) / (2.0f * bulkDensity);
+	}
+
+	float getTurbinePower(float mfrTurbine, float SHCP, float turbineInlentTemp, float P_in, float P_out, float heatRatio, float turbineEfficiency) {
+		if (P_in <= P_out || P_in <= 0.0f) {
+			return 0.0f;
+		}
+		return mfrTurbine * SHCP * turbineInlentTemp * (1.0f - std::pow(P_out / P_in, (heatRatio - 1.0f) / heatRatio)) * turbineEfficiency;
+	}
+
+	float getShaftVeloChange(float shaftTorque, float shaftInertia, float dt) {
+		float accel = shaftTorque / shaftInertia;
+		return accel * dt;
+	}
+
+	float getAmbientPressure(float groundTempK, float& airTempK, float height) {
+		float ambientPressure = 0.0f;
+
+		if (height <= 11000.0f) { // Troposphere
+			airTempK = groundTempK - (0.0065f * height);
+			ambientPressure = 101325.0f * std::pow((airTempK / groundTempK), 5.25588f);
+		}
+		else if (height <= 20000.0f) { // Lower Stratosphere
+			airTempK = 216.65f;
+			ambientPressure = 22632.10f * std::exp(-0.000157696f * (height - 11000.0f));
+		}
+		else if (height <= 32000.0f) { // Upper Stratosphere
+			airTempK = 216.65f + (0.001f * (height - 20000.0f));
+			ambientPressure = 5474.89f * std::pow((airTempK / 216.65f), -34.1632f);
+		}
+		else if (height <= 47000.0f) { // Stratopause
+			airTempK = 228.65f + (0.0028f * (height - 32000.0f));
+			ambientPressure = 868.02f * std::pow((airTempK / 228.65f), -12.2011f);
+		}
+		else if (height <= 51000.0f) { // Lower Mesosphere
+			airTempK = 270.65f;
+			ambientPressure = 110.91f * std::exp(-0.0001262f * (height - 47000.0f));
+		}
+		else if (height <= 71000.0f) { // Upper Mesosphere
+			airTempK = 270.65f - (0.0028f * (height - 51000.0f));
+			ambientPressure = 66.94f * std::pow((airTempK / 270.65f), 12.2011f);
+		}
+		else if (height <= 84852.0f) { // Mesopause
+			airTempK = 214.65f - (0.002f * (height - 71000.0f));
+			ambientPressure = 3.96f * std::pow((airTempK / 214.65f), 17.0816f);
+		}
+		else { // Space
+			airTempK = 186.87f;
+			ambientPressure = 0.0f;
+		}
+
+		return std::max(0.0f, ambientPressure);
+	}
 }

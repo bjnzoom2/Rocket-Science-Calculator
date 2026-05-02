@@ -86,14 +86,14 @@ int main() {
     float mixtureRatio = 2.56f;      // O/F Ratio for RP-1/LOX
     float propellantMass = 500.0f;  // kg
 
-    float throatArea = 0.005f;     // m2
+    float throatArea = 0.004f;     // m2
     float exitArea = 0.033f;       // m2
     float injectorArea = 0.0025f;    // m2
     float heatRatio = 1.24f;         
     float gasConstant = 360.0f;      // J/(kg * K)
     float chamberTemp = 3500.0f;     // K
 
-    float tankPressure = 350000.0f;  // 3.5 Bar (Pa)
+    float tankPressure = 500000.0f;  // 5 Bar (Pa)
     float pumpConstant = 0.000045f;
     float shaftInertia = 0.045f;     // kg*m2
     float pumpEfficiency = 0.70f;

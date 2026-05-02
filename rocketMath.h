@@ -188,10 +188,9 @@ namespace RocketMath {
 
 	float getAmbientPressure(float groundTempK, float& airTempK, float height) {
 		float ambientPressure = 0.0f;
-
 		if (height <= 11000.0f) { // Troposphere
-			airTempK = groundTempK - (0.0065f * height);
-			ambientPressure = 101325.0f * std::pow((airTempK / groundTempK), 5.25588f);
+			airTempK = 288.15f - (0.0065f * height);
+			ambientPressure = 101325.0f * std::pow((airTempK / 288.15f), 5.25588f);
 		}
 		else if (height <= 20000.0f) { // Lower Stratosphere
 			airTempK = 216.65f;
@@ -217,11 +216,10 @@ namespace RocketMath {
 			airTempK = 214.65f - (0.002f * (height - 71000.0f));
 			ambientPressure = 3.96f * std::pow((airTempK / 214.65f), 17.0816f);
 		}
-		else { // Space
+		else { // Exosphere / Space
 			airTempK = 186.87f;
-			ambientPressure = 0.0f;
+			ambientPressure = 0.00001f;
 		}
-
 		return std::max(0.0f, ambientPressure);
 	}
 }
